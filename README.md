@@ -9,7 +9,7 @@
 # Data / Models
 
 - datasets/gutenberg/data.tgz: sonnet data, with train/valid/test splits
-- pretrain_word2vec/dim100/*: pre-trained word2vec model (gunzip all before using it)
+- pretrain_word2vec/dim100/*: pre-trained word2vec model
 - trained_model/model.tgz: trained sonnet model
 
 # Pre-training Word Embeddings
@@ -22,7 +22,7 @@
 # Training the Sonnet Model
 
 1. Extract the data ; it should produce the train/valid/test splits
-   * `tar -xvzf datasets/gutenberg/data.tgz`
+   * `cd datasets/gutenberg; tar -xvzf data.tgz`
 1. Unzip the pre-trained word2vec model
    * `gunzip pretrain_word2vec/dim100/*`
 1. Set up model hyper-parameters and other settings, which are all defined in **config.py**
@@ -32,7 +32,7 @@
 # Generating Sonnet Quatrain
 
 1. Extract the trained model
-   * `tar -xvzf trained_model/model.tgz`
+   * `cd trained_model; tar -xvzf model.tgz`
 1. Run `python sonnet_gen.py -m trained_model`
    * the default configuration is the generation configuration used in the paper
 
