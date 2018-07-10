@@ -21,7 +21,7 @@ from nltk.corpus import cmudict
 from util import *
 
 #parser arguments
-desc = "Loads a trained model to do some test inferences and generation"
+desc = "Loads a trained model to do generation"
 parser = argparse.ArgumentParser(description=desc)
 
 #arguments
