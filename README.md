@@ -91,3 +91,8 @@ Temperature = 0.6 - 0.8
   
   
 ```
+
+
+# Publication
+
+Lau, Jey Han, Trevor Cohn, Timothy Baldwin, Julian Brooke and Adam Hammond (2018). [Deep-speare: A joint neural model of poetic language, meter and rhyme](XXX). In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018), Melbourne, Australia.
