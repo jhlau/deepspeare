@@ -1,10 +1,14 @@
 # Requirements
 - python2.7
 - tensorflow 0.12
-- nltk, cmudict and stopwords: import nltk; nltk.download("cmudict"); nltk.download("stopwords")
-- gensim: pip install gensim
-- sklearn: pip install sklearn
-- numpy: pip install numpy
+- nltk, cmudict and stopwords
+   - `import nltk; nltk.download("cmudict"); nltk.download("stopwords")`
+- gensim
+   - `pip install gensim`
+- sklearn
+   - `pip install sklearn`
+- numpy
+   - `pip install numpy`
 
 # Data / Models
 
