@@ -3,7 +3,7 @@ import logging
 import os
 
 #parameters
-output_dir="pretrain_word2vec/"
+output_dir="pretrain_word2vec/dim100"
 input_doc="datasets/gutenberg/pretrain.txt"
 
 #main
