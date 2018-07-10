@@ -108,7 +108,6 @@ def load_data(corpus, wordxid, idxword, charxid, idxchar, (pad_symbol, end_symbo
             word_data.append(word_lines)
             char_data.extend(char_lines)
 
-            #last_words = last_words[:12] #remove couplets (since they don't always rhyme)
             last_words = last_words[2:] #remove couplets (since they don't always rhyme)
 
             for wi, w in enumerate(last_words):
@@ -382,13 +381,6 @@ def eval_stress(accs, cmu, attns, pentameter, batch, idxchar, charxid, pad_symbo
         space_ids = [-1] + [i for i, ch in enumerate(chars) if ch == " "] + \
             [batch[ex].index(charxid[pad_symbol]) if charxid[pad_symbol] in batch[ex] else len(batch[ex])]
 
-        """
-        print "="*100
-        print "batch id =", ex
-        print "chars =", "".join(chars)
-        print "space_ids =", space_ids
-        """
-
         for spi, sp in enumerate(space_ids[:-1]):
 
             start  = sp+1
@@ -398,26 +390,16 @@ def eval_stress(accs, cmu, attns, pentameter, batch, idxchar, charxid, pad_symbo
             gold_stress = get_word_stress(cmu, word)
             sys_stress  = ""
 
-            """
-            print "\nword =", word
-            print "start, end =", start, end
-            print "gold stress =", gold_stress
-            """
-
             if len(gold_stress) == 0:
                 continue
 
             for attni, attn in enumerate(attns):
-
-                #print "\tattention for start,end =", attn[ex][start:end]
 
                 for ch in range(start, end):
 
                     if attn[ex][ch] >= attn_threshold: 
                         sys_stress += str(pentameter[attni])
                         break
-
-            #print "sys stress =", sys_stress
 
             update_stress_accs(accs, (end-start), float(sys_stress in gold_stress))
 
@@ -486,44 +468,26 @@ def eval_rhyme(pr, thresholds, cmu, attns, b, idxchar, charxid, pad_symbol, cf, 
     for ex in range(cf.batch_size):
         target  = "".join([idxchar[item] for item in b[0][ex][:b[1][ex]]])
         context = []
-        #for ci, c in enumerate(b[0][(ex*num_c+cf.batch_size):((ex+1)*num_c+cf.batch_size)]):
         for ci, c in enumerate(b[0][(ex*num_c+cf.batch_size):(ex*num_c+cf.batch_size+3)]):
             context.append("".join([idxchar[item] for item in c[:b[1][ex*num_c+cf.batch_size+ci]]]))
 
         target_rhyme  = get_rhyme([target])[0]
         context_rhyme = get_rhyme(context)
 
-        """
-        print "\n", "="*80
-        print "batch id =", ex
-        print target, "=", target_rhyme
-        """
-
         for t in thresholds:
-            #print "\nThreshold =", t
             for ci, c in enumerate(context):
                 score = rhyme_score(target_rhyme, context_rhyme[ci])
                 system_score = attns[ex][ci] if em_vocab == None else em_rhyme_score(target, context[ci])
-                #rhyme_baseline = (last_syllable(target) == last_syllable(context[ci]))
-                #print "\n\t", c, "=", context_rhyme[ci]
-                #print "\t\tscore =", score
-                #print "\t\tattn  =", attns[ex][ci]
 
                 #precision
                 if system_score >= t:
-                #if rhyme_baseline:
                     if score != None:
                         pr[t][0].append(score)
-                        #print "\t\t\tupdating precision!"
                         
                 #recall
                 if score == 1.0:
                     pr[t][1].append(float(system_score >= t))
-                    #pr[t][1].append(float(rhyme_baseline))
-                    #print "\t\t\tupdating recall!"
             
-                #print "\tpr[t] =", pr[t]
-
                 if cmu_rhyme != None and cmu_norhyme != None:
                     if score == 1.0:
                         if (target, context[ci]) not in cmu_rhyme and (context[ci], target) not in cmu_rhyme:
@@ -545,12 +509,8 @@ def collect_rhyme_pattern(rhyme_pattern, attentions, b, batch_size, num_context,
     #print "\n", "="*100
     for exid in range(batch_size):
         target_line_id = b[2][exid]
-        #print "\nTarget word =", "".join([idxchar[item] for item in b[0][exid] if item != pad_id])
-        #print "Target word line id =", target_line_id
         for ci, c in enumerate(b[0][(exid*num_context+batch_size):((exid+1)*num_context+batch_size)][:3]):
             context_line_id = get_context_line_id(target_line_id, ci)
-            #print "\t", ("%.2f" % attentions[exid][ci]), "=", "".join([idxchar[item] for item in c if item != pad_id])
-            #print "\t\tContext word line id =", context_line_id
             rhyme_pattern[target_line_id][context_line_id].append(attentions[exid][ci])
 
 

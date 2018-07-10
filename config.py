@@ -44,8 +44,6 @@ output_dir="output_tmp"
 train_data="datasets/gutenberg/sonnet_train.txt"
 valid_data="datasets/gutenberg/sonnet_valid.txt"
 test_data="datasets/gutenberg/sonnet_test.txt"
-pentameter_pos=None #"datasets/gutenberg/pentameter_pos.txt"
-pentameter_neg=None #"datasets/gutenberg/pentameter_neg.txt"
 output_prefix="wmin%d_sd%d_bat%d_kp%.1f_eph%d_grd%d_wdim%d_lmedim%d_lmddim%d_lmdlayer%d_lmadim%d_lmlr%.1f_cdim%d_pmedim%d_pmddim%d_pmadim%d_pmlr%.1E_loss%.1f-%.1f-%.1f_sm%.2f_rmdim%d_rmn%d_rmd%.1f_rmlr%.1E_son%d-%d" % \
     (word_minfreq, seed, batch_size, keep_prob, epoch_size, max_grad_norm, word_embedding_dim, lm_enc_dim,
     lm_dec_dim, lm_dec_layer_size, lm_attend_dim, lm_learning_rate,

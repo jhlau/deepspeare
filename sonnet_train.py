@@ -109,24 +109,6 @@ def run_epoch(sess, word_batches, char_batches, rhyme_batches, model, pname, is_
     
             b = mixed_batches[batch_type][word_batch_id]
 
-            """
-            print "\n\nbi =", bi
-            for exid in range(cf.batch_size):
-                print "=" * 20
-                print "batch id =", exid
-                print "\nx =", len(b[0][exid]), b[0][exid]
-                print "\tx_word =", " ".join([ idxword[item] for item in b[0][exid] ])
-                print "\ny =", len(b[1][exid]), b[1][exid]
-                print "\ndoc =", b[2][exid]
-                print "\ndoc_len =", b[3][exid]
-                print "\ndoc_line =", b[4][exid]
-                print "\nxchar =", len(b[5][exid]), b[5][exid]
-                print "\nxchar_len =", len(b[6][exid]), b[6][exid]
-                print "\nhist =", len(b[7][exid]), b[7][exid]
-                print "\thist_word=", " ".join([ idxword[item] for item in b[7][exid] ])
-                print "\nhist_len =", b[8][exid]
-            """
-
             #reset model state if it's a different set of documents
             if prev_doc != b[2][0]: 
                 model_state = zero_state
@@ -145,25 +127,11 @@ def run_epoch(sess, word_batches, char_batches, rhyme_batches, model, pname, is_
             lm_costs    += cost * cf.batch_size #keep track of full cost
             total_words += sum(b[3])
 
-            #if word_batch_id < 5 and not is_training:
-            #    print_lm_attention(word_batch_id, b, attns, idxword, cf)
-
             word_batch_id += 1
         
         elif batch_type == 1 and train_pm:
     
             b = mixed_batches[batch_type][char_batch_id]
-
-            """
-            print "\n\nbi =", bi
-            for exid in range(cf.batch_size):
-                print "=" * 20
-                print "batch id =", exid
-                print "\npm_enc_x =", len(b[0][exid]), b[0][exid]
-                print "\npm_enc_xchar =", "".join([idxchar[item] for item in b[0][exid]])
-                print "\npm_enc_xlen =", b[1][exid]
-                print "\ncov_mask =", len(b[2][exid]), b[2][exid]
-            """
 
             feed_dict        = {model.pm_enc_x: b[0], model.pm_enc_xlen: b[1], model.pm_cov_mask: b[2]}
             cost, attns, _,  = sess.run([model.pm_mean_cost, model.pm_attentions, pm_train_op], feed_dict)
@@ -179,25 +147,6 @@ def run_epoch(sess, word_batches, char_batches, rhyme_batches, model, pname, is_
             b     = mixed_batches[batch_type][rhyme_batch_id]
             num_c = 3 + cf.rm_neg
 
-            """
-            print "\n\nbi =", bi
-            print len(b[0]), len(b[1])
-            for exid in range(cf.batch_size):
-                print "=" * 20
-                print "batch id =", exid
-                print "\nx =", b[0][exid]
-                print "xlen =", b[1][exid]
-                print "xchar =", "".join([idxchar[item] for item in b[0][exid]])
-                for ci, c in enumerate(b[0][(exid*num_c+cf.batch_size):((exid+1)*num_c+cf.batch_size)]):
-                    print "\t", ci, ": c =", c
-                    print "\tclen ", b[1][exid*num_c+ci+cf.batch_size]
-                    print "\tcchar =", "".join([idxchar[item] for item in c])
-            #for exid in range(len(b[0])):
-            #    print "\nx =", b[0][exid]
-            #    print "xlen =", b[1][exid]
-            #    print "xchar =", "".join([idxchar[item] for item in b[0][exid]])
-            """
-                
             feed_dict       = {model.pm_enc_x: b[0], model.pm_enc_xlen: b[1], model.rm_num_context: num_c}
             cost, attns, _  = sess.run([model.rm_cost, model.rm_attentions, rm_train_op], feed_dict)
             rm_costs       += cost
@@ -257,13 +206,6 @@ def compute_pentameter_loss(sess, model, pentameter_file, label, y_scores, y_tru
         feed_dict = {model.pm_enc_x: b[0], model.pm_enc_xlen: b[1], model.pm_cov_mask: b[2]}
         attentions, costs, logits, mius = sess.run([model.pm_attentions, model.pm_costs, model.pm_logits,
             model.mius], feed_dict)
-
-        """
-        if bi == len(char_batch)-1 and label == 0:
-            print "\n", "="*100
-            print "LABEL =", label
-            print_pm_attention(b, cf.batch_size, costs, logits, attentions, mius, idxchar)
-        """
 
         for exid in range(cf.batch_size):
             y_scores.append(costs[exid])
@@ -363,21 +305,6 @@ def main():
             valid_rhyme_batch = create_rhyme_batch(valid_rhyme_data, cf.batch_size, charxid[pad_symbol], wordxchar,
                 cf.rm_neg, False)
 
-            """
-            tvars = tf.global_variables()
-            tvars_vals = sess.run(tvars)
-            for var, val in zip(tvars, tvars_vals):
-                #print(var.name, val)
-                var_val = None
-                if len(val.shape) == 2:
-                    var_val = val[0,:5]
-                elif len(val.shape) == 1:
-                    var_val = val[:5]
-                else:
-                    var_val = val
-                print var.name, var_val
-            """
-
             #train an epoch
             _, _, _, new_rhyme_pattern, _ = run_epoch(sess, train_word_batch, train_char_batch,
                 train_rhyme_batch, mtrain, "TRAIN", True)
@@ -393,12 +320,6 @@ def main():
                 test_rhyme_batch = create_rhyme_batch(test_rhyme_data, cf.batch_size,
                     charxid[pad_symbol], wordxchar, cf.rm_neg, False)
                 run_epoch(sess, test_word_batch, test_char_batch, test_rhyme_batch, mvalid, "TEST", False)
-
-            if train_pm and cf.pentameter_pos and cf.pentameter_neg:
-                y_scores, y_true = [], []
-                compute_pentameter_loss(sess, mvalid, cf.pentameter_pos, 0, y_scores, y_true)
-                compute_pentameter_loss(sess, mvalid, cf.pentameter_neg, 1, y_scores, y_true)
-                print "  Pentameter AUC =", roc_auc_score(y_true, y_scores)
 
             #if pm performance is really poor, re-initialize network weights
             if train_pm and sacc < stress_acc_threshold and prev_pm_loss == None:
@@ -435,8 +356,6 @@ def main():
                 print ("    Line %02d =" % i),
                 for j in range(len(rhyme_pattern[i])):
                     print ("%.2f" % np.mean(rhyme_pattern[i][j])).rjust(7),
-                    #print ("%.3f" % (float(sum(np.array(rhyme_pattern[i][j]) >= \
-                    #    rhyme_thresholds[1]))/len(rhyme_pattern[i][j]))).rjust(6),
                 print
                 
 

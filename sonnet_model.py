@@ -112,10 +112,6 @@ class SonnetModel(object):
         if is_training and cf.keep_prob < 1.0:
             lm_dec_cell = tf.nn.rnn_cell.DropoutWrapper(lm_dec_cell, output_keep_prob=cf.keep_prob)
         self.lm_dec_cell = tf.nn.rnn_cell.MultiRNNCell([lm_dec_cell] * cf.lm_dec_layer_size)
-        #if cf.lm_dec_layer_size > 1:
-        #    self.lm_dec_cell = ExtendedMultiRNNCell([lm_dec_cell] * cf.lm_dec_layer_size, residual_connections=True)
-        #else:
-        #    self.lm_dec_cell = lm_dec_cell
 
         #initial states
         self.lm_initial_state = self.lm_dec_cell.zero_state(batch_size, tf.float32)
@@ -146,9 +142,6 @@ class SonnetModel(object):
         dec_outputs, final_state = tf.nn.dynamic_rnn(self.lm_dec_cell, inputs, sequence_length=self.lm_xlen, \
             dtype=tf.float32, initial_state=self.lm_initial_state)
         self.lm_final_state = final_state
-
-        #reshape output into [batch_size,sent_len,hidden_size] and then into [batch_size*sent_len,hidden_size]
-#        hidden = tf.reshape(dec_outputs, [-1, cf.lm_dec_dim])
 
         #########################
         #encoder (history words)#
@@ -199,10 +192,6 @@ class SonnetModel(object):
         e = tf.reshape(e, [-1, enc_steps])
 
         #mask out pad symbols to compute alpha and weighted sum of history words
-        #e_mask   = tf.cast(tf.equal(self.lm_hist, tf.zeros(tf.shape(self.lm_hist), dtype=tf.int32)),
-        #    dtype=tf.float32)*-1e20
-        #e_mask   = tf.reshape(tf.tile(e_mask, [1,dec_steps]), [-1, enc_steps])
-        #alpha    = tf.reshape(tf.nn.softmax(e+e_mask), [batch_size, -1, 1])
         alpha    = tf.reshape(tf.nn.softmax(e), [batch_size, -1, 1])
         context  = tf.reduce_sum(tf.reshape(alpha * hist_outputs_t,
             [batch_size,dec_steps,enc_steps,-1]), 2)
@@ -241,7 +230,6 @@ class SonnetModel(object):
         #run optimiser and backpropagate (clipped) gradients for lm loss
         lm_tvars = tf.trainable_variables()
         lm_grads, _ = tf.clip_by_global_norm(tf.gradients(self.lm_cost, lm_tvars), cf.max_grad_norm)
-        #self.lm_train_op = tf.train.GradientDescentOptimizer(self.lr).apply_gradients(zip(lm_grads, lm_tvars))
         self.lm_train_op = tf.train.AdagradOptimizer(cf.lm_learning_rate).apply_gradients(zip(lm_grads, lm_tvars))
 
 
@@ -583,7 +571,6 @@ class SonnetModel(object):
             rhyme_abab  = ([None, None, 0, 1], [None, 0, None, None])
             rhyme_abba  = ([None, None, 1, 0], [None, 0, None, None])
             rhyme_pttn  = random.choice([rhyme_aabb, rhyme_abab, rhyme_abba])
-            #rhyme_pttn  = random.choice([rhyme_aabb])
             state       = sess.run(self.lm_dec_cell.zero_state(1, tf.float32))
             prev_state  = state
             x           = [[end_symbol_id]]
