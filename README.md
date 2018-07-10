@@ -25,7 +25,7 @@
 
 # Training the Sonnet Model
 
-1. Extract the data ; it should produce the train/valid/test splits
+1. Extract the data; it should produce the train/valid/test splits
    * `cd datasets/gutenberg; tar -xvzf data.tgz`
 1. Unzip the pre-trained word2vec model
    * `gunzip pretrain_word2vec/dim100/*`
