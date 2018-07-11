@@ -19,7 +19,7 @@
 # Pre-training Word Embeddings
 
 - The pre-trained word2vec model has already been supplied: pretrain_word2vec/dim100/*
-- The pre-trained word2vec model is trained on 34M Gutenberg poetry data: [download link](https://ibm.box.com/s/yj38zwrk21q584y1y9qkjt1huf5nepuu)
+- It was trained on 34M Gutenberg poetry data: [download link](https://ibm.box.com/s/yj38zwrk21q584y1y9qkjt1huf5nepuu)
 - If you want to train your own word embeddings, you can use the python script (uses gensim's word2vec)
    * `python pretrain_word2vec.py`
 
