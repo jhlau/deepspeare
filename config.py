@@ -40,7 +40,7 @@ verbose=False
 save_model=True
 
 ###input/output###
-output_dir="output_tmp"
+output_dir="output"
 train_data="datasets/gutenberg/sonnet_train.txt"
 valid_data="datasets/gutenberg/sonnet_valid.txt"
 test_data="datasets/gutenberg/sonnet_test.txt"
