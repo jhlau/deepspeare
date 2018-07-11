@@ -32,6 +32,7 @@
 1. Set up model hyper-parameters and other settings, which are all defined in **config.py**
    * the default configuration is the optimal configuration used in the paper
 1. Run `python sonnet_train.py`
+   * takes about 3 hours on a single GPU to train 30 epochs
 
 # Generating Sonnet Quatrain
 
@@ -39,6 +40,7 @@
    * `cd trained_model; tar -xvzf model.tgz`
 1. Run `python sonnet_gen.py -m trained_model`
    * the default configuration is the generation configuration used in the paper
+   * takes about a minute to generate one quatrain on CPU (GPU not necessary)
 
 ```
 usage: sonnet_gen.py [-h] -m MODEL_DIR [-n NUM_SAMPLES] [-r RM_THRESHOLD]
