@@ -30,7 +30,7 @@
 1. Unzip the pre-trained word2vec model
    * `gunzip pretrain_word2vec/dim100/*`
 1. Set up model hyper-parameters and other settings, which are all defined in **config.py**
-   * the default configuration is the optimal configuration used in the paper
+   * the default configuration is the optimal configuration used in the paper (documented [here](http://anthology.aclweb.org/attachments/P/P18/P18-1181.Notes.pdf))
 1. Run `python sonnet_train.py`
    * takes about 2-3 hours on a single K80 GPU to train 30 epochs
 
@@ -97,4 +97,4 @@ Temperature = 0.6 - 0.8
 
 # Publication
 
-Lau, Jey Han, Trevor Cohn, Timothy Baldwin, Julian Brooke and Adam Hammond (2018). [Deep-speare: A joint neural model of poetic language, meter and rhyme](https://arxiv.org/abs/1807.03491). In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018), Melbourne, Australia.
+Lau, Jey Han, Trevor Cohn, Timothy Baldwin, Julian Brooke and Adam Hammond (2018). [Deep-speare: A joint neural model of poetic language, meter and rhyme](https://arxiv.org/abs/1807.03491). In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018), Melbourne, Australia. [Supplementary Material](http://anthology.aclweb.org/attachments/P/P18/P18-1181.Notes.pdf).
