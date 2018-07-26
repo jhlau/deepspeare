@@ -54,6 +54,8 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
     end_symbol_id, unk_symbol_id, space_id, avoid_symbols, stopwords, temp_min, temp_max, max_lines, max_words,
     sent_sample, rm_threshold, verbose=False):
 
+    np.random.seed(1)
+
     def reset():
         rhyme_aabb  = ([None, 0, None, 2], [None, None, 1, None])
         rhyme_abab  = ([None, None, 0, 1], [None, 0, None, None])
@@ -138,6 +140,10 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
 
         else:
 
+            ix = np.argsort(all_pl)
+            all_sent = [all_sent[i] for i in ix]
+            all_state = [all_state[i] for i in ix]
+            all_pl = [all_pl[i] for i in ix]
             print "sent probs =", all_pl
 
             #convert pm_loss to probability using softmax
@@ -146,7 +152,10 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
             probs = probs / math.fsum(probs)
 
             #sample a sentence
+            print "probs =", probs
+            print "sampled multinomial =", np.random.multinomial(1, probs, 1)
             sent_id = np.argmax(np.random.multinomial(1, probs, 1))
+            print "selected =", sent_id
             sent    = all_sent[sent_id]
             state   = all_state[sent_id]
             pl      = all_pl[sent_id]
@@ -158,6 +167,7 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
             sonnet.extend(sent)
             sent_probs.append(-pl)
             last_words.append(sent[0])
+            print "yay done for one sentence"
 
         if verbose:
             sys.stdout.write("  Number of generated lines = %d/4\r" % (total_lines))
@@ -207,6 +217,7 @@ class SentenceGenerator(multiprocessing.Process):
             print "device", self.proc_id, "; seed =", self.seed+self.proc_id
             tf.set_random_seed(self.seed + self.proc_id)
             np.random.seed(self.seed + self.proc_id)
+	    random.seed(self.seed + self.proc_id)
 
             with tf.variable_scope("model", reuse=None):
                 mgen = SonnetModel(False, 1, len(self.idxword), len(self.idxchar),
