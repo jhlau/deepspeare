@@ -138,6 +138,8 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
 
         else:
 
+            print "sent probs =", all_pl
+
             #convert pm_loss to probability using softmax
             probs = np.exp(np.array(all_pl)/sent_temp)
             probs = probs.astype(np.float64) #convert to float64 for higher precision
@@ -202,7 +204,9 @@ class SentenceGenerator(multiprocessing.Process):
 
         #initialise and load model parameters
         with tf.Graph().as_default(), tf.Session() as sess:
+            print "device", self.proc_id, "; seed =", self.seed+self.proc_id
             tf.set_random_seed(self.seed + self.proc_id)
+            np.random.seed(self.seed + self.proc_id)
 
             with tf.variable_scope("model", reuse=None):
                 mgen = SonnetModel(False, 1, len(self.idxword), len(self.idxchar),
@@ -223,6 +227,7 @@ class SentenceGenerator(multiprocessing.Process):
                     self.output_queue.put(zero_state)
                     self.input_queue.task_done()
                 else:
+                    print "Generating using device", self.proc_id
                     sent, state, pl = mgen.sample_sent(sess, input)
                     self.output_queue.put([sent, state, pl])
                     self.input_queue.task_done()
@@ -238,8 +243,8 @@ def main():
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
     #set the seeds
-    random.seed(args.seed)
-    np.random.seed(args.seed)
+    #random.seed(args.seed)
+    #np.random.seed(args.seed)
 
     #load the vocabulary
     idxword, idxchar, wordxchar = cPickle.load(open(os.path.join(args.model_dir, "vocabs.pickle")))
@@ -258,7 +263,7 @@ def main():
     output_queue = multiprocessing.JoinableQueue()
 
     #for i in range(args.sent_sample):
-    for i in range(1): #TODO!
+    for i in range(10): #TODO!
         sg = SentenceGenerator(input_queue, output_queue, i, args.seed, idxword, idxchar, charxid, pad_symbol,
             args.model_dir)
         sg_list.append(sg)
@@ -281,7 +286,7 @@ def main():
 
     #all done, closing the sentence generation threads
     #for i in range(args.sent_sample):
-    for i in range(1): #TODO!
+    for i in range(10): #TODO!
         input_queue.put(None)
     input_queue.join()
     for sg in sg_list:
