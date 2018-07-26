@@ -475,9 +475,9 @@ class SonnetModel(object):
 
 
     # -- generate a sentence by sampling one word at a time
-    def sample_sent(self, sess, state, x, hist, hlen, xchar, xchar_len, avoid_symbols, stopwords,temp_min, temp_max,
+    def sample_sent(self, sess, (state, x, hist, hlen, xchar, xchar_len, avoid_symbols, stopwords,temp_min, temp_max,
         unk_symbol_id, pad_symbol_id, end_symbol_id, space_id, idxchar, charxid, idxword, wordxchar,
-        rm_target_pos, rm_target_neg, rm_threshold, last_words, max_words):
+        rm_target_pos, rm_target_neg, rm_threshold, last_words, max_words)):
 
         def filter_stop_symbol(word_ids):
             cleaned = set([])
@@ -495,7 +495,7 @@ class SonnetModel(object):
                     words.append(k)
             return set(words)
 
-        sent   = []
+        sent = []
 
         while True:
             probs, state = sess.run([self.lm_probs, self.lm_final_state],
@@ -560,115 +560,3 @@ class SonnetModel(object):
             self.mius], feed_dict)
 
         return pm_costs[0]
-
-
-    # -- quatrain generation
-    def generate(self, sess, idxword, idxchar, charxid, wordxchar, pad_symbol_id, end_symbol_id, unk_symbol_id, space_id,
-        avoid_symbols, stopwords, temp_min, temp_max, max_lines, max_words, sent_sample, rm_threshold, verbose=False):
-
-        def reset():
-            rhyme_aabb  = ([None, 0, None, 2], [None, None, 1, None])
-            rhyme_abab  = ([None, None, 0, 1], [None, 0, None, None])
-            rhyme_abba  = ([None, None, 1, 0], [None, 0, None, None])
-            rhyme_pttn  = random.choice([rhyme_aabb, rhyme_abab, rhyme_abba])
-            state       = sess.run(self.lm_dec_cell.zero_state(1, tf.float32))
-            prev_state  = state
-            x           = [[end_symbol_id]]
-            xchar       = [wordxchar[end_symbol_id]]
-            xchar_len   = [1]
-            sonnet      = []
-            sent_probs  = []
-            last_words  = []
-            total_words = 0
-            total_lines = 0
-            
-            return state, prev_state, x, xchar, xchar_len, sonnet, sent_probs, last_words, total_words, total_lines, \
-                rhyme_pttn[0], rhyme_pttn[1]
-
-        end_symbol = idxword[end_symbol_id]
-        sent_temp  = 0.1 #sentence sampling temperature
-
-        state, prev_state, x, xchar, xchar_len, sonnet, sent_probs, last_words, total_words, total_lines, \
-            rhyme_pttn_pos, rhyme_pttn_neg = reset()
-
-        #verbose prints during generation
-        if verbose:
-            sys.stdout.write("  Number of generated lines = 0/4\r")
-            sys.stdout.flush()
-
-        while total_words < max_words and total_lines < max_lines:
-
-            #add history context
-            if len(sonnet) == 0 or sonnet.count(end_symbol_id) < 1:
-                hist = [[unk_symbol_id] + [pad_symbol_id]*5]
-            else:
-                hist = [sonnet + [pad_symbol_id]*5]
-            hlen = [len(hist[0])]
-
-            """
-            print "\n\n", "="*80
-            print "state =", state[0][1][0][:10]
-            print "prev state =", prev_state[0][1][0][:10]
-            print "x =", x, idxword[x[0][0]]
-            print "hist =", hist, " ".join(idxword[item] for item in hist[0])
-            print "sonnet =", sonnet, " ".join(idxword[item] for item in sonnet)
-            """
-
-            #get rhyme targets for the 'first' word
-            rm_target_pos, rm_target_neg = None, None
-            if rhyme_pttn_pos[total_lines] != None:
-                rm_target_pos = last_words[rhyme_pttn_pos[total_lines]]
-            if rhyme_pttn_neg[total_lines] != None:
-                rm_target_neg = last_words[rhyme_pttn_neg[total_lines]]
-
-            #genereate N sentences and sample from them (using softmax(-one_pl) as probability)
-            all_sent, all_state, all_pl = [], [], []
-            for _ in range(sent_sample):
-                one_sent, one_state, one_pl = self.sample_sent(sess, state, x, hist, hlen, xchar, xchar_len,
-                    avoid_symbols, stopwords, temp_min, temp_max, unk_symbol_id, pad_symbol_id, end_symbol_id, space_id,
-                    idxchar, charxid, idxword, wordxchar, rm_target_pos, rm_target_neg, rm_threshold, last_words, max_words)
-                if one_sent != None:
-                    all_sent.append(one_sent)
-                    all_state.append(one_state)
-                    all_pl.append(-one_pl)
-                else:
-                    all_sent = []
-                    break
-
-            #unable to generate sentences; reset whole quatrain
-            if len(all_sent) == 0:
-
-                state, prev_state, x, xchar, xchar_len, sonnet, sent_probs, last_words, total_words, total_lines, \
-                    rhyme_pttn_pos, rhyme_pttn_neg = reset()
-
-            else:
-
-                #convert pm_loss to probability using softmax
-                probs = np.exp(np.array(all_pl)/sent_temp)
-                probs = probs.astype(np.float64) #convert to float64 for higher precision
-                probs = probs / math.fsum(probs)
-
-                #sample a sentence
-                sent_id = np.argmax(np.random.multinomial(1, probs, 1))
-                sent    = all_sent[sent_id]
-                state   = all_state[sent_id]
-                pl      = all_pl[sent_id]
-
-                total_words += len(sent)
-                total_lines += 1
-                prev_state   = state
-
-                sonnet.extend(sent)
-                sent_probs.append(-pl)
-                last_words.append(sent[0])
-
-            if verbose:
-                sys.stdout.write("  Number of generated lines = %d/4\r" % (total_lines))
-                sys.stdout.flush()
-
-        #postprocessing
-        sonnet = sonnet[:-1] if sonnet[-1] == end_symbol_id else sonnet
-        sonnet = [ postprocess_sentence(item) for item in \
-            " ".join(list(reversed([ idxword[item] for item in sonnet ]))).strip().split(end_symbol) ]
-
-        return sonnet, list(reversed(sent_probs))
