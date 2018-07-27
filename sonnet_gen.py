@@ -54,7 +54,6 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
     end_symbol_id, unk_symbol_id, space_id, avoid_symbols, stopwords, temp_min, temp_max, max_lines, max_words,
     sent_sample, rm_threshold, verbose=False):
 
-    np.random.seed(1)
 
     def reset():
         rhyme_aabb  = ([None, 0, None, 2], [None, None, 1, None])
@@ -215,9 +214,8 @@ class SentenceGenerator(multiprocessing.Process):
         #initialise and load model parameters
         with tf.Graph().as_default(), tf.Session() as sess:
             print "device", self.proc_id, "; seed =", self.seed+self.proc_id
-            tf.set_random_seed(self.seed + self.proc_id)
-            np.random.seed(self.seed + self.proc_id)
-	    random.seed(self.seed + self.proc_id)
+            tf.set_random_seed(self.seed + self.proc_id + 1)
+            np.random.seed(self.seed + self.proc_id + 1)
 
             with tf.variable_scope("model", reuse=None):
                 mgen = SonnetModel(False, 1, len(self.idxword), len(self.idxchar),
@@ -254,8 +252,8 @@ def main():
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
     #set the seeds
-    #random.seed(args.seed)
-    #np.random.seed(args.seed)
+    random.seed(args.seed)
+    np.random.seed(args.seed)
 
     #load the vocabulary
     idxword, idxchar, wordxchar = cPickle.load(open(os.path.join(args.model_dir, "vocabs.pickle")))
