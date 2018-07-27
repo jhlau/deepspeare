@@ -127,12 +127,9 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
                 all_sent.append(one_sent)
                 all_state.append(one_state)
                 all_pl.append(-one_pl)
-            else:
-                all_sent = []
-                break
 
-        #unable to generate sentences; reset whole quatrain
-        if len(all_sent) == 0:
+        #unable to generate half of the required sentences; reset whole quatrain
+        if len(all_sent) < sent_sample/2:
 
             state, prev_state, x, xchar, xchar_len, sonnet, sent_probs, last_words, total_words, total_lines, \
                 rhyme_pttn_pos, rhyme_pttn_neg = reset()
@@ -143,7 +140,6 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
             all_sent = [all_sent[i] for i in ix]
             all_state = [all_state[i] for i in ix]
             all_pl = [all_pl[i] for i in ix]
-            print "sent probs =", all_pl
 
             #convert pm_loss to probability using softmax
             probs = np.exp(np.array(all_pl)/sent_temp)
@@ -151,10 +147,7 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
             probs = probs / math.fsum(probs)
 
             #sample a sentence
-            print "probs =", probs
-            print "sampled multinomial =", np.random.multinomial(1, probs, 1)
             sent_id = np.argmax(np.random.multinomial(1, probs, 1))
-            print "selected =", sent_id
             sent    = all_sent[sent_id]
             state   = all_state[sent_id]
             pl      = all_pl[sent_id]
@@ -166,7 +159,6 @@ def generate(input_queue, output_queue, idxword, idxchar, charxid, wordxchar, pa
             sonnet.extend(sent)
             sent_probs.append(-pl)
             last_words.append(sent[0])
-            print "yay done for one sentence"
 
         if verbose:
             sys.stdout.write("  Number of generated lines = %d/4\r" % (total_lines))
@@ -209,11 +201,9 @@ class SentenceGenerator(multiprocessing.Process):
     def run(self):
 
         import tensorflow as tf
-        print('Using device #%s' % self.proc_id)
 
         #initialise and load model parameters
         with tf.Graph().as_default(), tf.Session() as sess:
-            print "device", self.proc_id, "; seed =", self.seed+self.proc_id
             tf.set_random_seed(self.seed + self.proc_id + 1)
             np.random.seed(self.seed + self.proc_id + 1)
 
@@ -229,14 +219,12 @@ class SentenceGenerator(multiprocessing.Process):
                 input = self.input_queue.get()
                 if input is None:
                     self.input_queue.task_done()
-                    print("Exiting Process %d" % self.proc_id)
                     break
                 elif input == 1:
                     zero_state = sess.run(mgen.lm_dec_cell.zero_state(1, tf.float32))
                     self.output_queue.put(zero_state)
                     self.input_queue.task_done()
                 else:
-                    print "Generating using device", self.proc_id
                     sent, state, pl = mgen.sample_sent(sess, input)
                     self.output_queue.put([sent, state, pl])
                     self.input_queue.task_done()
