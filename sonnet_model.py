@@ -11,7 +11,7 @@ class SonnetModel(object):
     def get_last_hidden(self, h, xlen):
 
         ids = tf.range(tf.shape(xlen)[0])
-        gather_ids = tf.concat(1, [tf.expand_dims(ids, 1), tf.expand_dims(xlen-1, 1)])
+        gather_ids = tf.concat([tf.expand_dims(ids, 1), tf.expand_dims(xlen-1, 1)], 1)
         return tf.gather_nd(h, gather_ids)
 
 
@@ -24,9 +24,9 @@ class SonnetModel(object):
         c_w      = tf.get_variable("c_w", [sdim+hdim, hdim])
         c_b      = tf.get_variable("c_b", [hdim], initializer=tf.constant_initializer())
 
-        z = tf.sigmoid(tf.matmul(tf.concat(1, [s, h]), update_w) + update_b)
-        r = tf.sigmoid(tf.matmul(tf.concat(1, [s, h]), reset_w) + reset_b)
-        c = tf.tanh(tf.matmul(tf.concat(1, [s, r*h]), c_w) + c_b)
+        z = tf.sigmoid(tf.matmul(tf.concat([s, h], 1), update_w) + update_b)
+        r = tf.sigmoid(tf.matmul(tf.concat([s, h], 1), reset_w) + reset_b)
+        c = tf.tanh(tf.matmul(tf.concat([s, r*h], 1), c_w) + c_b)
         
         return (1-z)*h + z*c
 
@@ -41,7 +41,7 @@ class SonnetModel(object):
         attend_w = tf.get_variable("attend_w", [hdim*2, hdim])
         attend_b = tf.get_variable("attend_b", [hdim], initializer=tf.constant_initializer())
 
-        g = tf.sigmoid(tf.matmul(tf.concat(1, [h_, s_]), attend_w) + attend_b)
+        g = tf.sigmoid(tf.matmul(tf.concat([h_, s_], 1), attend_w) + attend_b)
 
         return tf.reshape(h_* g, [h1, h2, -1])
 
@@ -128,11 +128,11 @@ class SonnetModel(object):
         #process character encodings
         #concat last hidden state of fw RNN with first hidden state of bw RNN
         fw_hidden = self.get_last_hidden(self.char_encodings[0], self.pm_enc_xlen)
-        char_inputs = tf.concat(1, [fw_hidden, self.char_encodings[1][:,0,:]])
+        char_inputs = tf.concat([fw_hidden, self.char_encodings[1][:,0,:]], 1)
         char_inputs = tf.reshape(char_inputs, [batch_size, -1, cf.pm_enc_dim*2]) #reshape into same dimension as inputs
         
         #concat word and char encodings
-        inputs = tf.concat(2, [word_inputs, char_inputs])
+        inputs = tf.concat([word_inputs, char_inputs], 2)
         #inputs = word_inputs
 
         #apply mask to zero out pad embeddings
@@ -162,10 +162,10 @@ class SonnetModel(object):
             inputs=hist_inputs, sequence_length=self.lm_hlen, dtype=tf.float32)
 
         #full history encoding
-        full_encoding = tf.concat(1, [hist_outputs[0][:,-1,:], hist_outputs[1][:,0,:]])
+        full_encoding = tf.concat([hist_outputs[0][:,-1,:], hist_outputs[1][:,0,:]], 1)
 
         #concat fw and bw hidden states
-        hist_outputs = tf.concat(2, hist_outputs)
+        hist_outputs = tf.concat(hist_outputs, 2)
 
         #selective encoding
         with tf.variable_scope("selective_encoding"):
@@ -186,8 +186,8 @@ class SonnetModel(object):
             [batch_size, -1, cf.lm_dec_dim])
 
         #compute e
-        hist_dec_concat = tf.concat(1, [tf.reshape(hist_outputs_t, [-1, cf.lm_enc_dim*2]),
-            tf.reshape(dec_outputs_t, [-1, cf.lm_dec_dim])])
+        hist_dec_concat = tf.concat([tf.reshape(hist_outputs_t, [-1, cf.lm_enc_dim*2]),
+            tf.reshape(dec_outputs_t, [-1, cf.lm_dec_dim])], 1)
         e = tf.matmul(tf.tanh(tf.matmul(hist_dec_concat, attend_w) + attend_b), attend_v)
         e = tf.reshape(e, [-1, enc_steps])
 
@@ -219,7 +219,7 @@ class SonnetModel(object):
 
         #compute logits and cost
         lm_logits     = tf.matmul(hidden, lm_softmax_w) + lm_softmax_b
-        lm_crossent   = tf.nn.sparse_softmax_cross_entropy_with_logits(lm_logits, tf.reshape(self.lm_y, [-1]))
+        lm_crossent   = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=lm_logits, labels=tf.reshape(self.lm_y, [-1]))
         lm_crossent_m = lm_crossent * tf.reshape(lm_mask, [-1])
         self.lm_cost  = tf.reduce_sum(lm_crossent_m) / batch_size
 
@@ -255,7 +255,7 @@ class SonnetModel(object):
         self.char_encodings = enc_hiddens
 
         #reshape enc_hiddens
-        enc_hiddens  = tf.reshape(tf.concat(2, enc_hiddens), [-1, cf.pm_enc_dim*2]) #[batch_size*num_steps, hidden]
+        enc_hiddens  = tf.reshape(tf.concat(enc_hiddens, 2), [-1, cf.pm_enc_dim*2]) #[batch_size*num_steps, hidden]
 
         #get decoder hidden states
         dec_cell = tf.nn.rnn_cell.LSTMCell(cf.pm_dec_dim)#, forget_bias=1.0)
@@ -298,7 +298,7 @@ class SonnetModel(object):
         context = char_enc[batch_size:,:]
 
         target_tiled   = tf.reshape(tf.tile(target, [1,self.rm_num_context]), [-1, cf.rm_dim])
-        target_context = tf.concat(1, [target_tiled, context])
+        target_context = tf.concat([target_tiled, context], 1)
 
         #cosine similarity
         e = tf.reduce_sum(tf.nn.l2_normalize(target_tiled, 1) * tf.nn.l2_normalize(context, 1), 1)
@@ -354,8 +354,8 @@ class SonnetModel(object):
                         miu_v    = tf.get_variable("miu_v", [cf.pm_attend_dim, 1])
                     
                     #position attention
-                    miu     = tf.minimum(tf.sigmoid(tf.matmul(tf.tanh(tf.matmul(tf.concat(1,
-                        [dec_hidden, prev_miu]), miu_w) + miu_b), miu_v)) + prev_miu, tf.ones([batch_size, 1]))
+                    miu     = tf.minimum(tf.sigmoid(tf.matmul(tf.tanh(tf.matmul(tf.concat(
+                        [dec_hidden, prev_miu], 1), miu_w) + miu_b), miu_v)) + prev_miu, tf.ones([batch_size, 1]))
                     miu_p   = miu * tf.reshape(tf.cast(self.pm_enc_xlen-1, tf.float32), [-1, 1])
                     pos     = tf.cast(tf.reshape(tf.tile(tf.range(xlen_max), [batch_size]), [batch_size, -1]),
                         dtype=tf.float32)
@@ -364,8 +364,8 @@ class SonnetModel(object):
             
                     #char encoding attention
                     pos_weight = tf.reshape(tf.exp(pos_lp), [-1, 1])
-                    inp_concat = tf.concat(1, [enc_hiddens * pos_weight,
-                        tf.reshape(tf.tile(dec_hidden, [1,xlen_max]), [-1,cf.pm_dec_dim])])
+                    inp_concat = tf.concat([enc_hiddens * pos_weight,
+                        tf.reshape(tf.tile(dec_hidden, [1,xlen_max]), [-1,cf.pm_dec_dim])], 1)
                     x       = self.pm_enc_x
                     e       = tf.matmul(tf.tanh(tf.matmul(inp_concat, attend_w) + attend_b), attend_v)
                     e       = tf.reshape(e, [batch_size, xlen_max])
@@ -396,14 +396,14 @@ class SonnetModel(object):
                 outputs.append(enc_hiddens_sum)
 
         #reshape output into [batch_size*num_steps,hidden_size]
-        outputs = tf.reshape(tf.concat(1, outputs), [-1, cf.pm_enc_dim*2])
+        outputs = tf.reshape(tf.concat(outputs, 1), [-1, cf.pm_enc_dim*2])
 
         #compute loss
         pm_softmax_w = tf.get_variable("pm_softmax_w", [cf.pm_enc_dim*2, 1])
         pm_softmax_b = tf.get_variable("pm_softmax_b", [1], initializer=tf.constant_initializer())
         pm_logit     = tf.squeeze(tf.matmul(outputs, pm_softmax_w) + pm_softmax_b)
-        pm_crossent  = tf.nn.sigmoid_cross_entropy_with_logits(pm_logit,
-            tf.tile(tf.cast(self.pentameter, tf.float32), [batch_size]))
+        pm_crossent  = tf.nn.sigmoid_cross_entropy_with_logits(logits=pm_logit,
+            labels=tf.tile(tf.cast(self.pentameter, tf.float32), [batch_size]))
         cov_loss     = tf.reduce_sum(tf.nn.relu(self.pm_cov_mask*cf.cov_loss_threshold - attentions), 1)
         pm_cost      = tf.reduce_sum(tf.reshape(pm_crossent, [batch_size, -1]), 1) + \
             cf.repeat_loss_scale*repeat_loss + cf.cov_loss_scale*cov_loss
