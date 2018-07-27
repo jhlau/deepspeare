@@ -259,8 +259,7 @@ def main():
     input_queue  = multiprocessing.JoinableQueue()
     output_queue = multiprocessing.JoinableQueue()
 
-    #for i in range(args.sent_sample):
-    for i in range(10): #TODO!
+    for i in range(args.sent_sample):
         sg = SentenceGenerator(input_queue, output_queue, i, args.seed, idxword, idxchar, charxid, pad_symbol,
             args.model_dir)
         sg_list.append(sg)
@@ -282,8 +281,7 @@ def main():
         quatrains.append(q)
 
     #all done, closing the sentence generation threads
-    #for i in range(args.sent_sample):
-    for i in range(10): #TODO!
+    for i in range(args.sent_sample):
         input_queue.put(None)
     input_queue.join()
     for sg in sg_list:
