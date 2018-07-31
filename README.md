@@ -1,8 +1,8 @@
 # Requirements
 - python2.7
+- tensorflow 0.12
    - CPU: `pip install tensorflow==0.12.0`
    - GPU: `pip install tensorflow-gpu==0.12.0`
-- tensorflow 0.12
 - nltk, cmudict and stopwords
    - `import nltk; nltk.download("cmudict"); nltk.download("stopwords")`
 - gensim
