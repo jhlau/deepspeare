@@ -98,13 +98,13 @@ Temperature = 0.6 - 0.8
 
 # Media Coverage
 - [New Scientist](https://www.newscientist.com/article/2175301-ai-creates-shakespearean-sonnets-and-theyre-actually-quite-good/)
-- [Times UK](https://www.thetimes.co.uk/article/computers-produce-poetry-by-the-meter-vk80077zl) (view the full article without subscription [here](http://htmlpreview.github.io/?https://github.com/jhlau/deepspeare/blob/master/media_coverage/uk_times.html))
+- [Times UK](https://www.thetimes.co.uk/article/computers-produce-poetry-by-the-meter-vk80077zl) (or view the full article without subscription [here](http://htmlpreview.github.io/?https://github.com/jhlau/deepspeare/blob/master/media_coverage/uk_times.html))
 - [Daily Mail](http://www.dailymail.co.uk/sciencetech/article-6000619/Can-spot-real-Shakespeare-sonnet-AI-learns-write-poetry.html)
 - [Digital Trends](https://www.digitaltrends.com/cool-tech/ai-generates-shakespearean-sonnets/)
 - [NVIDIA](https://news.developer.nvidia.com/ai-sonnet-writing-poet-resembles-shakespeare/)
 - [ABC Central News Now, Texas Affiliate](https://bit.ly/2M5s0zg)
 - [InfoSurHoy](http://infosurhoy.com/cocoon/saii/xhtml/en_GB/health/can-you-spot-the-real-shakespeare-sonnet-ai-learns-how-write-its-own-poetry/)
-- [BBC Radio 4 (from 1:45:20 to 1:49:20)](https://www.bbc.co.uk/programmes/b0bcddwc) (download extracted segment [here](media_coverage/bbc-radio4-20180801.m4a))
+- [BBC Radio 4 (from 1:45:20 to 1:49:20)](https://www.bbc.co.uk/programmes/b0bcddwc) (or download extracted segment [here](media_coverage/bbc-radio4-20180801.m4a))
 
 # Publication
 
