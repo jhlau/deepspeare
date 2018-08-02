@@ -97,7 +97,7 @@ Temperature = 0.6 - 0.8
 ```
 
 # Media Coverage
-- [New Scientist](https://www.newscientist.com/article/2175301-ai-creates-shakespearean-sonnets-and-theyre-actually-quite-good/)
+- [New Scientist](https://www.newscientist.com/article/2175301-ai-creates-shakespearean-sonnets-and-theyre-actually-quite-good/) (or view the full article [here](media_coverage/new_scientist.jpg))
 - [Times UK](https://www.thetimes.co.uk/article/computers-produce-poetry-by-the-meter-vk80077zl) (or view the full article without subscription [here](http://htmlpreview.github.io/?https://github.com/jhlau/deepspeare/blob/master/media_coverage/uk_times.html))
 - [Daily Mail](http://www.dailymail.co.uk/sciencetech/article-6000619/Can-spot-real-Shakespeare-sonnet-AI-learns-write-poetry.html)
 - [Digital Trends](https://www.digitaltrends.com/cool-tech/ai-generates-shakespearean-sonnets/)
