@@ -104,6 +104,7 @@ Temperature = 0.6 - 0.8
 - [NVIDIA](https://news.developer.nvidia.com/ai-sonnet-writing-poet-resembles-shakespeare/)
 - [ABC Central News Now, Texas Affiliate](https://bit.ly/2M5s0zg)
 - [InfoSurHoy](http://infosurhoy.com/cocoon/saii/xhtml/en_GB/health/can-you-spot-the-real-shakespeare-sonnet-ai-learns-how-write-its-own-poetry/)
+- [BBC Radio 4 (from 1:45:20 to 1:49:20)](https://www.bbc.co.uk/programmes/b0bcddwc) (download extracted segment [here](media_coverage/bbc-radio4-20180801.m4a))
 
 # Publication
 
