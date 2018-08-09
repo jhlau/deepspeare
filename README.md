@@ -107,6 +107,7 @@ Temperature = 0.6 - 0.8
 - [BBC Radio 4 (from 1:45:20 to 1:49:20)](https://www.bbc.co.uk/programmes/b0bcddwc) (or download extracted segment [here](media_coverage/bbc-radio4-20180801.m4a))
 - [Replubbica (Italian)](http://www.repubblica.it/scienze/2018/07/31/news/shakespeare_fatti_da_parte_i_sonetti_li_scrive_l_ai-203094778/?utm_source=dlvr.it&utm_medium=twitter)
 - [Datanami](https://www.datanami.com/2018/08/01/deep-speare-emulates-the-bard-with-ai/)
+- [TechXplore](https://techxplore.com/news/2018-08-sonnet-shakespeare.html)
 
 # Publication
 
