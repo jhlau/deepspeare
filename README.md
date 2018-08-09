@@ -108,6 +108,7 @@ Temperature = 0.6 - 0.8
 - [Replubbica (Italian)](http://www.repubblica.it/scienze/2018/07/31/news/shakespeare_fatti_da_parte_i_sonetti_li_scrive_l_ai-203094778/?utm_source=dlvr.it&utm_medium=twitter)
 - [Datanami](https://www.datanami.com/2018/08/01/deep-speare-emulates-the-bard-with-ai/)
 - [TechXplore](https://techxplore.com/news/2018-08-sonnet-shakespeare.html)
+- [RankRed](https://www.rankred.com/ai-writes-its-own-poetry/)
 
 # Publication
 
