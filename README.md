@@ -109,6 +109,7 @@ Temperature = 0.6 - 0.8
 - [Datanami](https://www.datanami.com/2018/08/01/deep-speare-emulates-the-bard-with-ai/)
 - [TechXplore](https://techxplore.com/news/2018-08-sonnet-shakespeare.html)
 - [RankRed](https://www.rankred.com/ai-writes-its-own-poetry/)
+- [EndGadget](https://www.engadget.com/2018/08/10/Ai-sonnets-shakespeare/)
 
 # Publication
 
