@@ -110,6 +110,9 @@ Temperature = 0.6 - 0.8
 - [TechXplore](https://techxplore.com/news/2018-08-sonnet-shakespeare.html)
 - [RankRed](https://www.rankred.com/ai-writes-its-own-poetry/)
 - [EndGadget](https://www.engadget.com/2018/08/10/Ai-sonnets-shakespeare/)
+- [The New York Post](https://nypost.com/2018/08/08/researchers-trained-robots-to-write-poetry/)
+- [Dazed](http://www.dazeddigital.com/science-tech/article/40985/1/artificial-intelligence-ai-poetry-sonnet-shakespeare)
+- [The Poetry Society](https://poetrysociety.org.uk/news/you-need-a-bit-of-unpredictability-poetry-society-director-judith-palmer-on-ai-poetry-on-talkradio/)
 
 # Publication
 
