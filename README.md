@@ -120,4 +120,4 @@ Jey Han Lau, Trevor Cohn, Timothy Baldwin, Julian Brooke and Adam Hammond (2018)
 
 # Talk
 
-"Creativity, Machine and Poetry" for a [public forum on language](https://art-museum.unimelb.edu.au/events/language/) [[video](https://www.youtube.com/watch?v=cHUIFKhPPyo)]
+_Creativity, Machine and Poetry_ for a [public forum on language](https://art-museum.unimelb.edu.au/events/language/) [[video](https://www.youtube.com/watch?v=cHUIFKhPPyo)]
