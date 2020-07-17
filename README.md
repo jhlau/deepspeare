@@ -113,6 +113,7 @@ Temperature = 0.6 - 0.8
 - [The New York Post](https://nypost.com/2018/08/08/researchers-trained-robots-to-write-poetry/)
 - [Dazed](http://www.dazeddigital.com/science-tech/article/40985/1/artificial-intelligence-ai-poetry-sonnet-shakespeare)
 - [The Poetry Society](https://poetrysociety.org.uk/news/you-need-a-bit-of-unpredictability-poetry-society-director-judith-palmer-on-ai-poetry-on-talkradio/)
+- [Passw0rd, Creativity and AI](https://www.mixcloud.com/FI_PassW0rd/passw0rd-creativity-and-ai/) (starts at around the 43 minute mark)
 
 # Publication
 
