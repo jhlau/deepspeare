@@ -96,6 +96,10 @@ Temperature = 0.6 - 0.8
   
 ```
 
+# Crowdflower and Expert Evaluation
+
+- Annotations can be found in the folder: evaluation_annotation/
+
 # Media Coverage
 - [New Scientist](https://www.newscientist.com/article/2175301-ai-creates-shakespearean-sonnets-and-theyre-actually-quite-good/) (or view the full article [here](media_coverage/new_scientist.jpg))
 - [Times UK](https://www.thetimes.co.uk/article/computers-produce-poetry-by-the-meter-vk80077zl) (or view the full article without subscription [here](http://htmlpreview.github.io/?https://github.com/jhlau/deepspeare/blob/master/media_coverage/uk_times.html))
