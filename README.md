@@ -15,13 +15,14 @@
 # Data / Models
 
 - datasets/gutenberg/data.tgz: sonnet data, with train/valid/test splits
+- datasets/gutenberg/pretrain.tgz: general poetry data ("Background" corpus in section 3 of the paper) used for pretraining word2vec (34M word tokens)
 - pretrain_word2vec/dim100/*: pre-trained word2vec model
 - trained_model/model.tgz: trained sonnet model
 
 # Pre-training Word Embeddings
 
 - The pre-trained word2vec model has already been supplied: pretrain_word2vec/dim100/*
-- It was trained on 34M Gutenberg poetry data: [download link](https://ibm.box.com/s/yj38zwrk21q584y1y9qkjt1huf5nepuu)
+- It was trained on 34M Gutenberg poetry data (in datasets/gutenberg/pretrain.tgz)
 - If you want to train your own word embeddings, you can use the python script (uses gensim's word2vec)
    * `python pretrain_word2vec.py`
 
